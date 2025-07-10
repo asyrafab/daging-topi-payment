@@ -93,41 +93,204 @@
       margin-top: 10px;
       text-align: center;
     }
-
-    @media (max-width: 768px) {
-      .row, .item {
-        flex-direction: column;
-        align-items: stretch;
+    @media print {
+      body * {
+        visibility: hidden;
       }
-      .item label {
-        text-align: center;
-        margin-bottom: 5px;
+      #report, #report * {
+        visibility: visible;
       }
-      .item input, .item button, select, input[type="date"] {
-        font-size: 18px;
-        padding: 10px;
-      }
-      .payment-buttons {
-        flex-direction: column;
-        gap: 10px;
-      }
-      .big-submit {
+      #report {
+        position: absolute;
+        left: 0;
+        top: 0;
         width: 100%;
-        font-size: 20px;
-        padding: 20px;
-      }
-      button.secondary {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      table {
-        font-size: 14px;
       }
     }
-  </style>
+  @media (max-width: 768px) {
+  .row, .item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .item label {
+    text-align: center;
+    margin-bottom: 5px;
+  }
+  .item input, .item button, select, input[type="date"] {
+    font-size: 18px;
+    padding: 10px;
+  }
+  .payment-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .big-submit {
+    width: 100%;
+    font-size: 20px;
+    padding: 20px;
+  }
+  button.secondary {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  table {
+    font-size: 14px;
+  }
+}
+</style>
 </head>
 <body>
   <h2>Daging Topi Payment System</h2>
-  <!-- The rest of the functional HTML code goes here -->
+  <div class="section row">
+    <label for="sessionDate">Select Date:</label>
+    <input type="date" id="sessionDate">
+    <label for="staff">Staff:</label>
+    <select id="staff">
+      <option>Acik</option>
+      <option>Sappy</option>
+      <option>Ayu</option>
+      <option>Farah</option>
+    </select>
+  </div>
+
+  <div id="items" class="section">
+    <div class="item"><label>7pcs (RM15):</label><button onclick="adjustQty('i7pcs', -1)">−</button><input type="text" id="i7pcs" value="0" readonly><button onclick="adjustQty('i7pcs', 1)">+</button></div>
+    <div class="item"><label>14pcs (RM28):</label><button onclick="adjustQty('i14pcs', -1)">−</button><input type="text" id="i14pcs" value="0" readonly><button onclick="adjustQty('i14pcs', 1)">+</button></div>
+    <div class="item"><label>Frozen (RM26):</label><button onclick="adjustQty('ifrozen', -1)">−</button><input type="text" id="ifrozen" value="0" readonly><button onclick="adjustQty('ifrozen', 1)">+</button></div>
+    <div class="item"><label>Kuah (RM2):</label><button onclick="adjustQty('ikuah', -1)">−</button><input type="text" id="ikuah" value="0" readonly><button onclick="adjustQty('ikuah', 1)">+</button></div>
+  </div>
+
+  <div class="section payment-buttons">
+    <button id="btnCash" onclick="selectPayment('Cash')">Pay with Cash</button>
+    <button id="btnQR" onclick="selectPayment('QR')">Pay with QR</button>
+  </div>
+
+  <div id="cashReceivedGroup" class="section">
+    <label>Cash Received: RM <input type="number" id="cashReceived" min="0" style="width: 100px;"></label><br>
+    <div id="changeDue"></div>
+  </div>
+
+  <div class="section">
+    <button class="big-submit sale-icon" onclick="submitSale()">Submit Sale</button>
+  </div>
+
+  <div class="section">
+    <button class="secondary" onclick="generateReport()">Generate Report</button>
+    <button class="secondary" onclick="generateReport(); window.print();">Print Report (PDF)</button>
+    <button class="secondary" onclick="clearData()">Clear All Data</button>
+  </div>
+
+  <div id="report" class="section"></div>
+
+  <script>
+    const prices = { i7pcs: 15, i14pcs: 28, ifrozen: 26, ikuah: 2 };
+    let selectedPayment = "Cash";
+    document.getElementById("sessionDate").valueAsDate = new Date();
+    highlightSelected();
+
+    function adjustQty(item, change) {
+      const input = document.getElementById(item);
+      let qty = parseInt(input.value) || 0;
+      qty += change;
+      if (qty < 0) qty = 0;
+      input.value = qty;
+    }
+
+    function selectPayment(type) {
+      selectedPayment = type;
+      document.getElementById('btnCash').classList.toggle('selected', type === 'Cash');
+      document.getElementById('btnQR').classList.toggle('selected', type === 'QR');
+      document.getElementById('cashReceivedGroup').style.display = (type === 'Cash') ? 'block' : 'none';
+      document.getElementById('cashReceived').value = '';
+      document.getElementById('changeDue').innerText = '';
+    }
+
+    function highlightSelected() {
+      document.getElementById('btnCash').classList.toggle('selected', selectedPayment === 'Cash');
+      document.getElementById('btnQR').classList.toggle('selected', selectedPayment === 'QR');
+    }
+
+    function getTimeNow() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-GB');
+    }
+
+    function submitSale() {
+      const date = document.getElementById('sessionDate').value;
+      const staff = document.getElementById('staff').value;
+      if (!date) return alert("Select session date");
+
+      let sale = { staff, payment: selectedPayment, timestamp: getTimeNow(), total: 0 };
+      for (let item in prices) {
+        const qty = parseInt(document.getElementById(item).value) || 0;
+        sale[item] = qty;
+        sale.total += qty * prices[item];
+      }
+
+      if (selectedPayment === 'Cash') {
+        const cashReceived = parseFloat(document.getElementById('cashReceived').value);
+        if (isNaN(cashReceived) || cashReceived < sale.total) {
+          alert(`Not enough cash received. Total is RM${sale.total.toFixed(2)}`);
+          return;
+        }
+        const change = cashReceived - sale.total;
+        sale.cashReceived = cashReceived;
+        sale.change = change;
+        document.getElementById('changeDue').innerText = `Change to return: RM${change.toFixed(2)}`;
+      }
+
+      const allSales = JSON.parse(localStorage.getItem('sales') || '{}');
+      if (!allSales[date]) allSales[date] = [];
+      allSales[date].push(sale);
+      localStorage.setItem('sales', JSON.stringify(allSales));
+
+      alert("Sale submitted!");
+      document.querySelectorAll('#items input').forEach(i => i.value = 0);
+    }
+
+    function generateReport() {
+      const allSales = JSON.parse(localStorage.getItem('sales') || '{}');
+      let html = "";
+
+      for (let date in allSales) {
+        const daySales = allSales[date];
+        let summary = { i7pcs: 0, i14pcs: 0, ifrozen: 0, ikuah: 0, cash: 0, qr: 0 };
+        daySales.forEach(sale => {
+          summary.i7pcs += sale.i7pcs || 0;
+          summary.i14pcs += sale.i14pcs || 0;
+          summary.ifrozen += sale.ifrozen || 0;
+          summary.ikuah += sale.ikuah || 0;
+          sale.payment === "Cash" ? summary.cash += sale.total : summary.qr += sale.total;
+        });
+
+        html += `<h3>Sales Report - ${date}</h3>`;
+        html += `<table><tr><th>Item</th><th>Total Sold</th></tr>
+          <tr><td>7pcs</td><td>${summary.i7pcs}</td></tr>
+          <tr><td>14pcs</td><td>${summary.i14pcs}</td></tr>
+          <tr><td>Frozen</td><td>${summary.ifrozen}</td></tr>
+          <tr><td>Kuah</td><td>${summary.ikuah}</td></tr>
+          <tr><td><strong>Total Cash</strong></td><td><strong>RM${summary.cash.toFixed(2)}</strong></td></tr>
+          <tr><td><strong>Total QR</strong></td><td><strong>RM${summary.qr.toFixed(2)}</strong></td></tr>
+          <tr><td><strong>Grand Total</strong></td><td><strong>RM${(summary.cash + summary.qr).toFixed(2)}</strong></td></tr>
+        </table>`;
+
+        html += `<h4>Transaction Log:</h4>
+        <table><tr><th>#</th><th>Time</th><th>Staff</th><th>7pcs</th><th>14pcs</th><th>Frozen</th><th>Kuah</th><th>Payment</th><th>Total (RM)</th><th>Cash Received</th><th>Change</th></tr>`;
+        daySales.forEach((sale, i) => {
+          html += `<tr><td>${i + 1}</td><td>${sale.timestamp}</td><td>${sale.staff}</td><td>${sale.i7pcs}</td><td>${sale.i14pcs}</td><td>${sale.ifrozen}</td><td>${sale.ikuah}</td><td>${sale.payment}</td><td>${sale.total.toFixed(2)}</td><td>${sale.cashReceived ? sale.cashReceived.toFixed(2) : '-'}</td><td>${sale.change ? sale.change.toFixed(2) : '-'}</td></tr>`;
+        });
+        html += `</table>`;
+      }
+      document.getElementById('report').innerHTML = html;
+    }
+
+    function clearData() {
+      if (confirm("Clear all sales data?")) {
+        localStorage.removeItem('sales');
+        document.getElementById('report').innerHTML = '';
+        alert("Data cleared");
+      }
+    }
+  </script>
 </body>
 </html>
