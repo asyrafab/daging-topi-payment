@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <title>Daging Topi Payment System</title>
   <style>
+    html {
+      font-size: 16px;
+    }
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
@@ -108,17 +112,26 @@
       }
     }
   @media (max-width: 768px) {
+  body {
+    padding: 10px;
+    max-width: 100%;
+  }
+  h2 {
+    font-size: 20px;
+  }
   .row, .item {
     flex-direction: column;
     align-items: stretch;
+    width: 100%;
   }
   .item label {
     text-align: center;
     margin-bottom: 5px;
   }
   .item input, .item button, select, input[type="date"] {
-    font-size: 18px;
-    padding: 10px;
+    font-size: 20px;
+    padding: 12px;
+    width: 100%;
   }
   .payment-buttons {
     flex-direction: column;
@@ -126,17 +139,23 @@
   }
   .big-submit {
     width: 100%;
-    font-size: 20px;
-    padding: 20px;
+    font-size: 22px;
+    padding: 18px;
   }
   button.secondary {
     width: 100%;
     margin-bottom: 10px;
   }
   table {
-    font-size: 14px;
+    font-size: 16px;
+    word-break: break-word;
+  }
+  #report table {
+    overflow-x: auto;
+    display: block;
   }
 }
+  
 </style>
 </head>
 <body>
