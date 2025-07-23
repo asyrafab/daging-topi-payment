@@ -1,168 +1,96 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Daging Topi Payment System</title>
   <style>
-    html {
-      font-size: 16px;
-    }
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 750px;
-      margin: auto;
-      text-align: center;
       background-color: #f5f5dc;
-    }
-    .item, .row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      justify-content: center;
-    }
-    .item label {
-      flex: 1;
-      text-align: left;
-    }
-    .item button {
-      width: 30px;
-      height: 30px;
-      font-weight: bold;
-    }
-    .item input {
-      width: 50px;
       text-align: center;
+      padding: 20px;
+      margin: 0 auto;
+      max-width: 750px;
+    }
+    h2 {
+      margin-bottom: 20px;
     }
     .section {
       margin-top: 20px;
     }
+    .item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .item label {
+      flex: 1;
+      text-align: right;
+    }
+    .item input {
+      width: 60px;
+      text-align: center;
+    }
+    .item button {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+    }
     .payment-buttons {
       display: flex;
       justify-content: center;
-      gap: 20px;
       flex-wrap: wrap;
+      gap: 10px;
     }
     .payment-buttons button {
-      padding: 15px 25px;
+      padding: 10px 20px;
       font-size: 16px;
       font-weight: bold;
       border: 2px solid #333;
+      background: #eee;
       border-radius: 8px;
-      cursor: pointer;
-      background-color: #eee;
     }
     .payment-buttons button.selected {
       background-color: #4CAF50;
       color: white;
     }
     .big-submit {
-      display: inline-block;
-      margin: 20px 0;
+      margin-top: 20px;
       padding: 15px 30px;
-      font-size: 18px;
       background-color: #ffeb3b;
-      color: black;
       border: 3px solid black;
-      border-radius: 10px;
+      font-weight: bold;
+      font-size: 20px;
       cursor: pointer;
     }
     .sale-icon::after {
-      content: ' ✅';
+      content: " ✅";
     }
-    button.secondary {
-      padding: 10px 20px;
-      margin-right: 10px;
-    }
-    table {
+    .report-table {
       width: 100%;
-      border-collapse: collapse;
       margin-top: 20px;
+      border-collapse: collapse;
     }
-    th, td {
+    .report-table th, .report-table td {
       border: 1px solid #ccc;
       padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    .hidden {
-      display: none;
     }
     #cashReceivedGroup {
       display: none;
       margin-top: 10px;
-      text-align: center;
     }
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #report, #report * {
-        visibility: visible;
-      }
-      #report {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-    }
-  @media (max-width: 768px) {
-  body {
-    padding: 10px;
-    max-width: 100%;
-  }
-  h2 {
-    font-size: 20px;
-  }
-  .row, .item {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-  }
-  .item label {
-    text-align: center;
-    margin-bottom: 5px;
-  }
-  .item input, .item button, select, input[type="date"] {
-    font-size: 20px;
-    padding: 12px;
-    width: 100%;
-  }
-  .payment-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .big-submit {
-    width: 100%;
-    font-size: 22px;
-    padding: 18px;
-  }
-  button.secondary {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  table {
-    font-size: 16px;
-    word-break: break-word;
-  }
-  #report table {
-    overflow-x: auto;
-    display: block;
-  }
-}
-  
-</style>
+  </style>
 </head>
 <body>
   <h2>Daging Topi Payment System</h2>
-  <div class="section row">
-    <label for="sessionDate">Select Date:</label>
-    <input type="date" id="sessionDate">
+
+  <div class="section">
+    <label for="sessionDate">Session Date:</label>
+    <input type="date" id="sessionDate" />
     <label for="staff">Staff:</label>
     <select id="staff">
       <option>Acik</option>
@@ -172,11 +100,11 @@
     </select>
   </div>
 
-  <div id="items" class="section">
-    <div class="item"><label>7pcs (RM15):</label><button onclick="adjustQty('i7pcs', -1)">−</button><input type="text" id="i7pcs" value="0" readonly><button onclick="adjustQty('i7pcs', 1)">+</button></div>
-    <div class="item"><label>14pcs (RM28):</label><button onclick="adjustQty('i14pcs', -1)">−</button><input type="text" id="i14pcs" value="0" readonly><button onclick="adjustQty('i14pcs', 1)">+</button></div>
-    <div class="item"><label>Frozen (RM26):</label><button onclick="adjustQty('ifrozen', -1)">−</button><input type="text" id="ifrozen" value="0" readonly><button onclick="adjustQty('ifrozen', 1)">+</button></div>
-    <div class="item"><label>Kuah (RM2):</label><button onclick="adjustQty('ikuah', -1)">−</button><input type="text" id="ikuah" value="0" readonly><button onclick="adjustQty('ikuah', 1)">+</button></div>
+  <div class="section" id="items">
+    <div class="item"><label>7pcs (RM15):</label><button onclick="adjustQty('i7pcs', -1)">−</button><input type="text" id="i7pcs" value="0" readonly /><button onclick="adjustQty('i7pcs', 1)">+</button></div>
+    <div class="item"><label>14pcs (RM28):</label><button onclick="adjustQty('i14pcs', -1)">−</button><input type="text" id="i14pcs" value="0" readonly /><button onclick="adjustQty('i14pcs', 1)">+</button></div>
+    <div class="item"><label>Frozen (RM26):</label><button onclick="adjustQty('ifrozen', -1)">−</button><input type="text" id="ifrozen" value="0" readonly /><button onclick="adjustQty('ifrozen', 1)">+</button></div>
+    <div class="item"><label>Kuah (RM2):</label><button onclick="adjustQty('ikuah', -1)">−</button><input type="text" id="ikuah" value="0" readonly /><button onclick="adjustQty('ikuah', 1)">+</button></div>
   </div>
 
   <div class="section payment-buttons">
@@ -184,8 +112,8 @@
     <button id="btnQR" onclick="selectPayment('QR')">Pay with QR</button>
   </div>
 
-  <div id="cashReceivedGroup" class="section">
-    <label>Cash Received: RM <input type="number" id="cashReceived" min="0" style="width: 100px;"></label><br>
+  <div class="section" id="cashReceivedGroup">
+    <label>Cash Received: RM <input type="number" id="cashReceived" min="0"></label>
     <div id="changeDue"></div>
   </div>
 
@@ -194,18 +122,15 @@
   </div>
 
   <div class="section">
-    <button class="secondary" onclick="generateReport()">Generate Report</button>
-    <button class="secondary" onclick="generateReport(); window.print();">Print Report (PDF)</button>
-    <button class="secondary" onclick="clearData()">Clear All Data</button>
+    <button onclick="generateReport()">Generate Report</button>
   </div>
 
-  <div id="report" class="section"></div>
+  <div class="section" id="report"></div>
 
   <script>
     const prices = { i7pcs: 15, i14pcs: 28, ifrozen: 26, ikuah: 2 };
     let selectedPayment = "Cash";
     document.getElementById("sessionDate").valueAsDate = new Date();
-    highlightSelected();
 
     function adjustQty(item, change) {
       const input = document.getElementById(item);
@@ -217,98 +142,76 @@
 
     function selectPayment(type) {
       selectedPayment = type;
-      document.getElementById('btnCash').classList.toggle('selected', type === 'Cash');
-      document.getElementById('btnQR').classList.toggle('selected', type === 'QR');
-      document.getElementById('cashReceivedGroup').style.display = (type === 'Cash') ? 'block' : 'none';
-      document.getElementById('cashReceived').value = '';
-      document.getElementById('changeDue').innerText = '';
-    }
-
-    function highlightSelected() {
-      document.getElementById('btnCash').classList.toggle('selected', selectedPayment === 'Cash');
-      document.getElementById('btnQR').classList.toggle('selected', selectedPayment === 'QR');
-    }
-
-    function getTimeNow() {
-      const now = new Date();
-      return now.toLocaleTimeString('en-GB');
+      document.getElementById("btnCash").classList.toggle("selected", type === "Cash");
+      document.getElementById("btnQR").classList.toggle("selected", type === "QR");
+      document.getElementById("cashReceivedGroup").style.display = type === "Cash" ? "block" : "none";
+      document.getElementById("cashReceived").value = "";
+      document.getElementById("changeDue").innerText = "";
     }
 
     function submitSale() {
-      const date = document.getElementById('sessionDate').value;
-      const staff = document.getElementById('staff').value;
+      const date = document.getElementById("sessionDate").value;
+      const staff = document.getElementById("staff").value;
       if (!date) return alert("Select session date");
 
-      let sale = { staff, payment: selectedPayment, timestamp: getTimeNow(), total: 0 };
-      for (let item in prices) {
-        const qty = parseInt(document.getElementById(item).value) || 0;
-        sale[item] = qty;
-        sale.total += qty * prices[item];
+      const sale = { staff, payment: selectedPayment, timestamp: new Date().toLocaleTimeString(), total: 0 };
+      for (let key in prices) {
+        const qty = parseInt(document.getElementById(key).value) || 0;
+        sale[key] = qty;
+        sale.total += qty * prices[key];
       }
 
-      if (selectedPayment === 'Cash') {
-        const cashReceived = parseFloat(document.getElementById('cashReceived').value);
+      if (selectedPayment === "Cash") {
+        const cashReceived = parseFloat(document.getElementById("cashReceived").value);
         if (isNaN(cashReceived) || cashReceived < sale.total) {
-          alert(`Not enough cash received. Total is RM${sale.total.toFixed(2)}`);
+          alert("Not enough cash received.");
           return;
         }
-        const change = cashReceived - sale.total;
         sale.cashReceived = cashReceived;
-        sale.change = change;
-        document.getElementById('changeDue').innerText = `Change to return: RM${change.toFixed(2)}`;
+        sale.change = cashReceived - sale.total;
+        document.getElementById("changeDue").innerText = `Change: RM${sale.change.toFixed(2)}`;
       }
 
-      const allSales = JSON.parse(localStorage.getItem('sales') || '{}');
-      if (!allSales[date]) allSales[date] = [];
-      allSales[date].push(sale);
-      localStorage.setItem('sales', JSON.stringify(allSales));
-
+      const data = JSON.parse(localStorage.getItem("sales") || "{}");
+      data[date] = data[date] || [];
+      data[date].push(sale);
+      localStorage.setItem("sales", JSON.stringify(data));
       alert("Sale submitted!");
-      document.querySelectorAll('#items input').forEach(i => i.value = 0);
+
+      document.querySelectorAll("#items input").forEach(el => el.value = 0);
     }
 
     function generateReport() {
-      const allSales = JSON.parse(localStorage.getItem('sales') || '{}');
+      const report = document.getElementById("report");
+      const data = JSON.parse(localStorage.getItem("sales") || "{}");
       let html = "";
 
-      for (let date in allSales) {
-        const daySales = allSales[date];
-        let summary = { i7pcs: 0, i14pcs: 0, ifrozen: 0, ikuah: 0, cash: 0, qr: 0 };
-        daySales.forEach(sale => {
-          summary.i7pcs += sale.i7pcs || 0;
-          summary.i14pcs += sale.i14pcs || 0;
-          summary.ifrozen += sale.ifrozen || 0;
-          summary.ikuah += sale.ikuah || 0;
-          sale.payment === "Cash" ? summary.cash += sale.total : summary.qr += sale.total;
+      for (let date in data) {
+        const daySales = data[date];
+        let totalCash = 0, totalQR = 0;
+        let totalItems = { i7pcs: 0, i14pcs: 0, ifrozen: 0, ikuah: 0 };
+        daySales.forEach(s => {
+          totalItems.i7pcs += s.i7pcs || 0;
+          totalItems.i14pcs += s.i14pcs || 0;
+          totalItems.ifrozen += s.ifrozen || 0;
+          totalItems.ikuah += s.ikuah || 0;
+          (s.payment === "Cash" ? totalCash : totalQR) += s.total;
         });
 
         html += `<h3>Sales Report - ${date}</h3>`;
-        html += `<table><tr><th>Item</th><th>Total Sold</th></tr>
-          <tr><td>7pcs</td><td>${summary.i7pcs}</td></tr>
-          <tr><td>14pcs</td><td>${summary.i14pcs}</td></tr>
-          <tr><td>Frozen</td><td>${summary.ifrozen}</td></tr>
-          <tr><td>Kuah</td><td>${summary.ikuah}</td></tr>
-          <tr><td><strong>Total Cash</strong></td><td><strong>RM${summary.cash.toFixed(2)}</strong></td></tr>
-          <tr><td><strong>Total QR</strong></td><td><strong>RM${summary.qr.toFixed(2)}</strong></td></tr>
-          <tr><td><strong>Grand Total</strong></td><td><strong>RM${(summary.cash + summary.qr).toFixed(2)}</strong></td></tr>
+        html += `<table class="report-table">
+          <tr><th>Item</th><th>Total</th></tr>
+          <tr><td>7pcs</td><td>${totalItems.i7pcs}</td></tr>
+          <tr><td>14pcs</td><td>${totalItems.i14pcs}</td></tr>
+          <tr><td>Frozen</td><td>${totalItems.ifrozen}</td></tr>
+          <tr><td>Kuah</td><td>${totalItems.ikuah}</td></tr>
+          <tr><td>Total Cash</td><td>RM${totalCash.toFixed(2)}</td></tr>
+          <tr><td>Total QR</td><td>RM${totalQR.toFixed(2)}</td></tr>
+          <tr><td>Grand Total</td><td>RM${(totalCash + totalQR).toFixed(2)}</td></tr>
         </table>`;
-
-        html += `<h4>Transaction Log:</h4>
-        <table><tr><th>#</th><th>Time</th><th>Staff</th><th>7pcs</th><th>14pcs</th><th>Frozen</th><th>Kuah</th><th>Payment</th><th>Total (RM)</th><th>Cash Received</th><th>Change</th></tr>`;
-        daySales.forEach((sale, i) => {
-          html += `<tr><td>${i + 1}</td><td>${sale.timestamp}</td><td>${sale.staff}</td><td>${sale.i7pcs}</td><td>${sale.i14pcs}</td><td>${sale.ifrozen}</td><td>${sale.ikuah}</td><td>${sale.payment}</td><td>${sale.total.toFixed(2)}</td><td>${sale.cashReceived ? sale.cashReceived.toFixed(2) : '-'}</td><td>${sale.change ? sale.change.toFixed(2) : '-'}</td></tr>`;
-        });
-        html += `</table>`;
       }
-      document.getElementById('report').innerHTML = html;
-    }
 
-    function clearData() {
-      if (confirm("Clear all sales data?")) {
-        localStorage.removeItem('sales');
-        document.getElementById('report').innerHTML = '';
-        alert("Data cleared");
-      }
+      report.innerHTML = html;
     }
   </script>
 </body>
